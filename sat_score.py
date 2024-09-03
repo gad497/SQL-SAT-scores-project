@@ -1,3 +1,6 @@
+import mysql.connector
+
+
 def menu():
     print("[1] Insert data")
     print("[2] View all data")
@@ -10,8 +13,42 @@ def menu():
     print("[0] Exit program")
 
 
+def connect_to_database():
+    return mysql.connector.connect(
+        host="localhost",
+        user="admin",
+        password="admin123!",
+        database="sat_scores"
+    )
+
+
+def close_connections(db, cursor):
+    db.close()
+    cursor.close()
+
+
+def insert_data(db, cursor):
+    name = input("Enter name: ")
+    address = input("Enter address: ")
+    city = input("Enter city: ")
+    country = input("Enter country: ")
+    pincode = input("Enter pincode: ")
+    sat_score = input("Enter sat_score: ")
+    passed = "Pass" if (int(sat_score)/1600) > 0.3 else "Fail"
+    command = "INSERT INTO scores (name, address, city, country, pincode, SAT_score, PASSED) VALUES (\'" + name + "\',\'" + address + "\',\'" + city + "\',\'" + country + "\'," + pincode + "," + sat_score + ",\'" + passed + "\')"
+    try:
+        print("Inserting data...")
+        cursor.execute(command)
+        db.commit()
+        print("Successfully inserted data")
+    except:
+        print("Insertion failed")
+
+
 if __name__ == "__main__":
     option = None
+    db = connect_to_database()
+    cursor = db.cursor()
     while option != 0:
         menu()
         try:
@@ -25,7 +62,7 @@ if __name__ == "__main__":
                 print("Exiting program...")
                 break
             case 1:
-                print("Inserting data...")
+                insert_data(db, cursor)
             case 2:
                 print("Viewing all data...")
             case 3:
@@ -46,3 +83,4 @@ if __name__ == "__main__":
         if option == "0":
             print("Exiting program...")
             break
+    close_connections(db, cursor)
