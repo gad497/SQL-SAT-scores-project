@@ -97,6 +97,37 @@ def get_avg_score(cursor):
     print("Average score is:",cursor.fetchone()[0])
 
 
+def filter_record(db):
+    t_cursor = db.cursor(dictionary=True)
+    print("PASSED\n")
+    query = "SELECT * FROM scores WHERE PASSED = \'Pass\'"
+    t_cursor.execute(query)
+    rows = t_cursor.fetchall()
+    json_data = json.dumps(rows, indent=4)
+    print(json_data)
+    print("\nFAILED\n")
+    query = "SELECT * FROM scores WHERE PASSED = \'Fail\'"
+    t_cursor.execute(query)
+    rows = t_cursor.fetchall()
+    json_data = json.dumps(rows, indent=4)
+    print(json_data)
+    t_cursor.close()
+
+
+def write_table_to_file(cursor):
+    query = "SELECT * FROM scores"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    file_name = "scores.json"
+    with open(file_name, "w") as f:
+        if results:
+            print("Writing to file")
+            f.write(str(results))
+            print("Write successful")
+        else:
+            print("No data available")
+
+
 if __name__ == "__main__":
     option = None
     db = connect_to_database()
@@ -126,9 +157,9 @@ if __name__ == "__main__":
             case 6:
                 get_avg_score(cursor)
             case 7:
-                print("Filtering records by Pass/Fail Status...")
+                filter_record(db)
             case 8:
-                print("Putting inserted data in json format...")
+                write_table_to_file(cursor)
             case _:
                 print("No such option available")
         option = input("Press enter to continue, 0 to exit\n")
