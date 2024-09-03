@@ -47,6 +47,7 @@ def insert_data(db, cursor):
 
 
 def view_data(db):
+    print("Viewing all data...")
     t_cursor = db.cursor(dictionary=True)
     t_cursor.execute("SELECT * FROM scores")
     rows = t_cursor.fetchall()
@@ -90,6 +91,12 @@ def delete_row(db, cursor):
         print("Failed to delete")
 
 
+def get_avg_score(cursor):
+    query = "SELECT AVG(SAT_score) FROM scores"
+    cursor.execute(query)
+    print("Average score is:",cursor.fetchone()[0])
+
+
 if __name__ == "__main__":
     option = None
     db = connect_to_database()
@@ -109,7 +116,6 @@ if __name__ == "__main__":
             case 1:
                 insert_data(db, cursor)
             case 2:
-                print("Viewing all data...")
                 view_data(db)
             case 3:
                 get_rank(cursor)
@@ -118,7 +124,7 @@ if __name__ == "__main__":
             case 5:
                 delete_row(db, cursor)
             case 6:
-                print("Calculating average SAT score...")
+                get_avg_score(cursor)
             case 7:
                 print("Filtering records by Pass/Fail Status...")
             case 8:
