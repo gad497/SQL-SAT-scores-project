@@ -78,6 +78,18 @@ def update_score(db, cursor):
         print("Update failed")
 
 
+def delete_row(db, cursor):
+    person = input("Enter name: ")
+    query = f"DELETE FROM scores WHERE name = '{person}'"
+    try:
+        print("Deleting...")
+        cursor.execute(query)
+        db.commit()
+        print("Successfully deleted entry")
+    except:
+        print("Failed to delete")
+
+
 if __name__ == "__main__":
     option = None
     db = connect_to_database()
@@ -104,7 +116,7 @@ if __name__ == "__main__":
             case 4:
                 update_score(db, cursor)
             case 5:
-                print("Deleting record...")
+                delete_row(db, cursor)
             case 6:
                 print("Calculating average SAT score...")
             case 7:
