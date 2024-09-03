@@ -47,11 +47,85 @@ def insert_data(db, cursor):
 
 
 def view_data(db):
+    print("Viewing all data...")
     t_cursor = db.cursor(dictionary=True)
     t_cursor.execute("SELECT * FROM scores")
     rows = t_cursor.fetchall()
     json_data = json.dumps(rows, indent=4)
     print(json_data)
+    t_cursor.close()
+
+
+def get_rank(cursor):
+    person = input("Enter name: ")
+    query = "SELECT name, RANK() OVER (ORDER BY SAT_score DESC) FROM scores"
+    cursor.execute(query)
+    print("Getting rank...")
+    for x in cursor:
+        if x[0] == person:
+            print(f"Rank of {person} is {x[1]}")
+
+
+def update_score(db, cursor):
+    person = input("Enter name: ")
+    new_score = input("Enter_new_score: ")
+    query = f"UPDATE scores SET SAT_score = {new_score} WHERE name = '{person}'"
+    try:
+        print("Updating score...")
+        cursor.execute(query)
+        db.commit()
+        print("Update successful")
+    except:
+        print("Update failed")
+
+
+def delete_row(db, cursor):
+    person = input("Enter name: ")
+    query = f"DELETE FROM scores WHERE name = '{person}'"
+    try:
+        print("Deleting...")
+        cursor.execute(query)
+        db.commit()
+        print("Successfully deleted entry")
+    except:
+        print("Failed to delete")
+
+
+def get_avg_score(cursor):
+    query = "SELECT AVG(SAT_score) FROM scores"
+    cursor.execute(query)
+    print("Average score is:",cursor.fetchone()[0])
+
+
+def filter_record(db):
+    t_cursor = db.cursor(dictionary=True)
+    print("PASSED\n")
+    query = "SELECT * FROM scores WHERE PASSED = \'Pass\'"
+    t_cursor.execute(query)
+    rows = t_cursor.fetchall()
+    json_data = json.dumps(rows, indent=4)
+    print(json_data)
+    print("\nFAILED\n")
+    query = "SELECT * FROM scores WHERE PASSED = \'Fail\'"
+    t_cursor.execute(query)
+    rows = t_cursor.fetchall()
+    json_data = json.dumps(rows, indent=4)
+    print(json_data)
+    t_cursor.close()
+
+
+def write_table_to_file(cursor):
+    query = "SELECT * FROM scores"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    file_name = "scores.json"
+    with open(file_name, "w") as f:
+        if results:
+            print("Writing to file")
+            f.write(str(results))
+            print("Write successful")
+        else:
+            print("No data available")
 
 
 if __name__ == "__main__":
@@ -73,20 +147,19 @@ if __name__ == "__main__":
             case 1:
                 insert_data(db, cursor)
             case 2:
-                print("Viewing all data...")
                 view_data(db)
             case 3:
-                print("Getting rank...")
+                get_rank(cursor)
             case 4:
-                print("Updating score...")
+                update_score(db, cursor)
             case 5:
-                print("Deleting record...")
+                delete_row(db, cursor)
             case 6:
-                print("Calculating average SAT score...")
+                get_avg_score(cursor)
             case 7:
-                print("Filtering records by Pass/Fail Status...")
+                filter_record(db)
             case 8:
-                print("Putting inserted data in json format...")
+                write_table_to_file(cursor)
             case _:
                 print("No such option available")
         option = input("Press enter to continue, 0 to exit\n")
