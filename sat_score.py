@@ -65,6 +65,19 @@ def get_rank(cursor):
             print(f"Rank of {person} is {x[1]}")
 
 
+def update_score(db, cursor):
+    person = input("Enter name: ")
+    new_score = input("Enter_new_score: ")
+    query = f"UPDATE scores SET SAT_score = {new_score} WHERE name = '{person}'"
+    try:
+        print("Updating score...")
+        cursor.execute(query)
+        db.commit()
+        print("Update successful")
+    except:
+        print("Update failed")
+
+
 if __name__ == "__main__":
     option = None
     db = connect_to_database()
@@ -89,7 +102,7 @@ if __name__ == "__main__":
             case 3:
                 get_rank(cursor)
             case 4:
-                print("Updating score...")
+                update_score(db, cursor)
             case 5:
                 print("Deleting record...")
             case 6:
