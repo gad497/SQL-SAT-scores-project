@@ -1,4 +1,5 @@
 import mysql.connector
+import json
 
 
 def menu():
@@ -45,6 +46,14 @@ def insert_data(db, cursor):
         print("Insertion failed")
 
 
+def view_data(db):
+    t_cursor = db.cursor(dictionary=True)
+    t_cursor.execute("SELECT * FROM scores")
+    rows = t_cursor.fetchall()
+    json_data = json.dumps(rows, indent=4)
+    print(json_data)
+
+
 if __name__ == "__main__":
     option = None
     db = connect_to_database()
@@ -65,6 +74,7 @@ if __name__ == "__main__":
                 insert_data(db, cursor)
             case 2:
                 print("Viewing all data...")
+                view_data(db)
             case 3:
                 print("Getting rank...")
             case 4:
