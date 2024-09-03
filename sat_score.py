@@ -52,6 +52,17 @@ def view_data(db):
     rows = t_cursor.fetchall()
     json_data = json.dumps(rows, indent=4)
     print(json_data)
+    t_cursor.close()
+
+
+def get_rank(cursor):
+    person = input("Enter name: ")
+    query = "SELECT name, RANK() OVER (ORDER BY SAT_score DESC) FROM scores"
+    cursor.execute(query)
+    print("Getting rank...")
+    for x in cursor:
+        if x[0] == person:
+            print(f"Rank of {person} is {x[1]}")
 
 
 if __name__ == "__main__":
@@ -76,7 +87,7 @@ if __name__ == "__main__":
                 print("Viewing all data...")
                 view_data(db)
             case 3:
-                print("Getting rank...")
+                get_rank(cursor)
             case 4:
                 print("Updating score...")
             case 5:
